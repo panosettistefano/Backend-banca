@@ -1,0 +1,13 @@
+# =====================================================================
+# Configurazione base dell'API AppBancaria
+#
+# Nota: la configurazione di datasource, Flyway e JPA viene aggiunta
+# nello STEP 1 (database), quella di sicurezza e JWT nello STEP 3.
+# =====================================================================
+
+spring:
+  application:
+    name: appbancaria-api
+
+server:
+  port: 8080
