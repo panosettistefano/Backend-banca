@@ -1,13 +1,52 @@
 # =====================================================================
-# Configurazione base dell'API AppBancaria
+# Configurazione dell'API AppBancaria
 #
-# Nota: la configurazione di datasource, Flyway e JPA viene aggiunta
-# nello STEP 1 (database), quella di sicurezza e JWT nello STEP 3.
+# Nota: la configurazione di sicurezza e JWT viene aggiunta nello STEP 3.
 # =====================================================================
 
 spring:
   application:
     name: appbancaria-api
+
+  # -------------------------------------------------------------------
+  # Database
+  # -------------------------------------------------------------------
+  datasource:
+    # allowPublicKeyRetrieval=true -> MySQL 8.4 usa di default l'autenticazione
+    #   caching_sha2_password: senza TLS la connessione fallisce con
+    #   "Public Key Retrieval is not allowed".
+    # useSSL=false               -> accettabile solo in ambiente dimostrativo locale.
+    # connectionTimeZone=UTC     -> le date viaggiano in UTC, coerente con
+    #   hibernate.jdbc.time_zone e con il fuso orario del container MySQL.
+    url: "jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:appbancaria}?allowPublicKeyRetrieval=true&useSSL=false&connectionTimeZone=UTC&characterEncoding=UTF-8"
+    username: ${DB_USER:demo}
+    password: ${DB_PASSWORD:demo}
+
+  # -------------------------------------------------------------------
+  # JPA / Hibernate
+  # -------------------------------------------------------------------
+  jpa:
+    hibernate:
+      # Lo schema appartiene a Flyway: Hibernate si limita a verificare che
+      # le entita corrispondano alle tabelle, senza mai modificarle.
+      ddl-auto: validate
+    # La sessione Hibernate si chiude con la transazione del service, non con
+    # la risposta HTTP: evita query inattese durante la serializzazione.
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+
+  # -------------------------------------------------------------------
+  # Migrazioni
+  # -------------------------------------------------------------------
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    # Se una migrazione gia applicata viene modificata, Flyway blocca l'avvio
+    # invece di lasciare il database in uno stato ambiguo.
+    validate-on-migrate: true
 
 server:
   port: 8080
