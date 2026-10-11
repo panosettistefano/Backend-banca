@@ -118,11 +118,13 @@ class AutenticazioneControllerTest {
     }
 
     @Test
-    @DisplayName("Con un token valido la sicurezza lascia passare (404: la rotta arriva allo STEP 4)")
+    @DisplayName("Con un token valido la sicurezza lascia passare fino al controller")
     void conTokenValidoLaSicurezzaLasciaPassare() throws Exception {
+        // Fino allo STEP 3 questa rotta non esisteva e la risposta era 404; dallo STEP 4
+        // esiste e risponde 200: quello che conta qui e che non sia piu 401.
         mockMvc.perform(get("/api/accounts")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokenValido()))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isOk());
     }
 
     @Test

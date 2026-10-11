@@ -25,8 +25,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  * usato da Docker e dagli script per capire se l'API e viva; le pagine di Swagger UI, che
  * documentano l'API e vanno lette prima di avere un token.
  *
- * <p>La protezione dei metodi ({@code @PreAuthorize} e simili) arriva allo STEP 4, quando
- * ci saranno regole per ruolo da esprimere.
+ * <p>Non serve la protezione dei metodi ({@code @PreAuthorize}): l'unico ruolo e CLIENTE e
+ * l'isolamento tra clienti passa dalle ricerche per titolare, non da regole sul ruolo.
  */
 @Configuration
 @EnableWebSecurity
