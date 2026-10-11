@@ -1,7 +1,9 @@
 package it.appbancaria.repository;
 
 import it.appbancaria.model.Conto;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -28,6 +30,18 @@ public interface ContoRepository extends JpaRepository<Conto, Long> {
      * cliente il risultato e vuoto, e l'API rispondera 404 senza rivelare che il conto esiste.
      */
     Optional<Conto> findByIdAndTitolareId(Long id, Long titolareId);
+
+    /**
+     * Come {@code findByIdAndTitolareId}, ma blocca la riga del conto fino alla fine della
+     * transazione ({@code SELECT ... FOR UPDATE}). Serve alla conferma di un trasferimento,
+     * dove il saldo viene riletto e poi modificato: senza il blocco due conferme in
+     * parallelo leggerebbero lo stesso saldo.
+     *
+     * <p>Il testo fra "find" e "By" e ignorato da Spring Data: la query e la stessa di
+     * {@code findByIdAndTitolareId}, cambia solo il blocco.
+     */
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    Optional<Conto> findConBloccoByIdAndTitolareId(Long id, Long titolareId);
 
     /** Verifica l'esistenza di un codice conto, che e univoco. */
     boolean existsByCodiceConto(String codiceConto);

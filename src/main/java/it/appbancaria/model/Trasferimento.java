@@ -37,7 +37,9 @@ public class Trasferimento {
 
     /**
      * Codice pubblico del trasferimento (UUID), univoco: e l'identificativo da mostrare
-     * all'utente e da usare nelle chiamate di conferma, al posto dell'id interno.
+     * all'utente e da citare in una comunicazione ("trasferimento n. 3f2a..."), mentre le
+     * URL dell'API usano l'id interno. Le ricerche restano comunque filtrate per cliente,
+     * quindi un id altrui non e raggiungibile.
      */
     @Column(name = "riferimento", nullable = false, unique = true, length = 36)
     private String riferimento;
