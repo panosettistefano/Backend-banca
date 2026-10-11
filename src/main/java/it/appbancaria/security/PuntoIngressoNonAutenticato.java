@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import it.appbancaria.web.dto.ErroreRisposta;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -39,6 +40,7 @@ public class PuntoIngressoNonAutenticato implements AuthenticationEntryPoint {
         risposta.setContentType(MediaType.APPLICATION_JSON_VALUE);
         risposta.setCharacterEncoding(StandardCharsets.UTF_8.name());
         objectMapper.writeValue(risposta.getOutputStream(),
-                new ErroreRisposta("Token mancante o non valido"));
+                ErroreRisposta.di(HttpStatus.UNAUTHORIZED, "Token mancante o non valido",
+                        richiesta.getRequestURI()));
     }
 }

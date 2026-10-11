@@ -1,5 +1,6 @@
 package it.appbancaria.web.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import it.appbancaria.model.Conto;
 
 import java.math.BigDecimal;
@@ -19,7 +20,19 @@ import java.math.BigDecimal;
  * @param valuta      codice ISO 4217 della valuta del conto
  * @param saldo       saldo attuale nella valuta del conto
  */
-public record ContoDto(Long id, String codiceConto, String valuta, BigDecimal saldo) {
+@Schema(description = "Conto del cliente autenticato")
+public record ContoDto(
+        @Schema(description = "Chiave del conto", example = "3")
+        Long id,
+
+        @Schema(description = "Codice del conto in formato IBAN", example = "IT60X0542811101000000123456")
+        String codiceConto,
+
+        @Schema(description = "Codice ISO 4217 della valuta", example = "EUR")
+        String valuta,
+
+        @Schema(description = "Saldo attuale, nella valuta del conto", example = "8742.00")
+        BigDecimal saldo) {
 
     /** Costruisce il DTO a partire dall'entita. */
     public static ContoDto da(Conto conto) {
