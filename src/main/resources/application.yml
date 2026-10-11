@@ -1,7 +1,8 @@
 # =====================================================================
 # Configurazione dell'API AppBancaria
 #
-# Nota: la configurazione di sicurezza e JWT viene aggiunta nello STEP 3.
+# Nota: le regole di sicurezza stanno nel codice (it.appbancaria.security);
+# qui restano solo i parametri del token, in fondo al file.
 # =====================================================================
 
 spring:
@@ -50,3 +51,16 @@ spring:
 
 server:
   port: 8080
+
+# -------------------------------------------------------------------
+# Token JWT
+# -------------------------------------------------------------------
+appbancaria:
+  jwt:
+    # Chiave dimostrativa: vale solo in locale, per un progetto didattico senza dati
+    # reali. Deve essere di almeno 32 byte (HS256), altrimenti l'avvio fallisce con
+    # WeakKeyException. In un sistema vero arriverebbe da una variabile d'ambiente o
+    # da un gestore di segreti: la variabile JWT_CHIAVE e gia pronta per questo.
+    chiave: "${JWT_CHIAVE:AppBancaria-chiave-dimostrativa-locale-2026!}"
+    # Durata del token dall'emissione: 2 ore. Formato ISO-8601 (PT2H = 2 ore).
+    scadenza: PT2H
