@@ -37,8 +37,8 @@ docker build -t appbancaria-api:locale .
 ```
 
 La CI non pubblica l'immagine in un registry: la build serve a verificare il `Dockerfile`. Per avviare
-lo stack completo in locale, dalla radice del workspace:
+lo stack completo in locale, dal repository backend (con `appbancaria-web` nella stessa cartella):
 
 ```bash
-docker compose -f compose.yaml up -d --build
+./avvia-tutto.sh
 ```

@@ -17,17 +17,20 @@ non hanno alcun effetto fuori dal database demo.
 - Docker e Docker Compose (modo consigliato)
 - JDK 21 per far girare l'API senza Docker (il wrapper scarica Maven)
 - Node 24.16 solo per il frontend nel repository `appbancaria-web`
+- I due repository `appbancaria-api` e `appbancaria-web` clonati nella stessa cartella, con questi nomi
+  (il compose costruisce il frontend da `../appbancaria-web`)
 
 ## Avvio rapido (stack completo)
 
-Dalla radice del workspace, la cartella che contiene `appbancaria-api`, `appbancaria-web` e `compose.yaml`:
+Dal repository `appbancaria-api`, con `appbancaria-web` clonato nella stessa cartella:
 
 ```bash
 ./avvia-tutto.sh
 ```
 
-Lo script controlla Docker e le porte `8080`, `4200` e `3306`, costruisce le immagini e avvia MySQL,
-API e frontend. Al termine:
+Lo script controlla Docker e le porte `8080`, `4200` e `3306`, avvia MySQL, API e frontend e attende i
+healthcheck. Le immagini vengono costruite se mancano; per ricostruirle: `./avvia-tutto.sh --build`.
+Al termine:
 
 | Servizio | Indirizzo |
 |---|---|
@@ -40,10 +43,11 @@ Per fermare tutto: `./avvia-tutto.sh --stop`. I dati restano nel volume.
 ## Solo backend
 
 ```bash
-docker compose up -d --build
+docker compose up -d mysql api
 ```
 
-Avvia MySQL e API. Per seguire i log: `docker compose logs -f api`.
+Avvia solo MySQL e API, senza il frontend (che il compose completo costruirebbe da `../appbancaria-web`).
+Per seguire i log: `docker compose logs -f api`.
 
 ### Avvio locale dell'API
 
@@ -131,4 +135,6 @@ src/test/java  test unitari e di integrazione
 - **Flyway 11 e MySQL 8.4**: all'avvio compare il warning *"MySQL 8.4 is newer than this version of
   Flyway"*; è innocuo, le migrazioni vengono applicate.
 - **Testcontainers**: i test di integrazione richiedono Docker attivo.
+- **`appbancaria-web` non trovato**: il compose completo cerca il frontend in `../appbancaria-web`.
+  Clonare i due repo nella stessa cartella e avviare da `appbancaria-api`.
 - **Frontend**: richiede Node 24.16; vedere il README di `appbancaria-web`.

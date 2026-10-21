@@ -1,14 +1,17 @@
 # =====================================================================
-# Backend AppBancaria — API Spring Boot + database MySQL
+# Stack completo AppBancaria — MySQL + API + frontend
 #
-# Uso da questo repository:
-#   docker compose up -d --build      avvia MySQL e API
+# Uso da questo repository (appbancaria-api):
+#   docker compose up -d              avvia i tre servizi (costruisce se mancano)
+#   docker compose up -d --build      ricostruisce le immagini e avvia
 #   docker compose logs -f            segue i log
 #   docker compose down               ferma i container (i dati restano nel volume)
 #   docker compose down -v            ferma tutto e CANCELLA i dati (ripartenza pulita)
 #
-# Per avviare l'intero stack (anche il frontend) usare il compose alla
-# radice del workspace, che include questo file.
+# Il servizio web costruisce il frontend dal repository sibling
+# ../appbancaria-web: clonare i due repo nella stessa cartella con questi
+# nomi. Lo script ./avvia-tutto.sh fa gli stessi controlli e attende i
+# healthcheck.
 #
 # Le credenziali qui sotto sono fittizie e valgono solo per questo
 # ambiente dimostrativo locale: nessun dato o accesso reale.
@@ -44,6 +47,7 @@ services:
       start_period: 30s
 
   api:
+    image: appbancaria-api:latest
     build:
       context: .
       dockerfile: Dockerfile
@@ -66,6 +70,25 @@ services:
       timeout: 5s
       retries: 12
       start_period: 40s
+
+  web:
+    image: appbancaria-web:latest
+    build:
+      context: ../appbancaria-web
+      dockerfile: Dockerfile
+    container_name: appbancaria-web
+    restart: unless-stopped
+    ports:
+      - "4200:80"
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1/ || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 10s
 
 volumes:
   mysql-dati:
