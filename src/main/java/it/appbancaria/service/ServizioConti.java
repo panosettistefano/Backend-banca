@@ -22,8 +22,8 @@ import java.util.List;
  * esiste: 404.
  *
  * <p>{@code readOnly = true} perche le due operazioni leggono soltanto, e il mapping verso
- * i DTO avviene dentro la transazione, dove le associazioni LAZY sarebbero ancora
- * caricabili (le entita qui non ne toccano nessuna: vedi {@link ContoDto}).
+ * i DTO avviene dentro la transazione, dove le associazioni LAZY sono ancora caricabili
+ * ({@link ContoDto} legge il titolare del conto).
  */
 @Service
 @Transactional(readOnly = true)
