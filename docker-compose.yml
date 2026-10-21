@@ -1,17 +1,17 @@
 # =====================================================================
-# Ambiente di sviluppo AppBancaria — database MySQL
+# Backend AppBancaria — API Spring Boot + database MySQL
 #
-# Uso:
-#   docker compose up -d      avvia MySQL in background
-#   docker compose logs -f    segue i log
-#   docker compose down       ferma i container (i dati restano nel volume)
-#   docker compose down -v    ferma tutto e CANCELLA i dati (ripartenza pulita)
+# Uso da questo repository:
+#   docker compose up -d --build      avvia MySQL e API
+#   docker compose logs -f            segue i log
+#   docker compose down               ferma i container (i dati restano nel volume)
+#   docker compose down -v            ferma tutto e CANCELLA i dati (ripartenza pulita)
+#
+# Per avviare l'intero stack (anche il frontend) usare il compose alla
+# radice del workspace, che include questo file.
 #
 # Le credenziali qui sotto sono fittizie e valgono solo per questo
 # ambiente dimostrativo locale: nessun dato o accesso reale.
-#
-# Nota: il servizio "api" verra aggiunto a questo file quando sara
-# disponibile il Dockerfile dell'applicazione.
 # =====================================================================
 
 services:
@@ -42,6 +42,30 @@ services:
       timeout: 5s
       retries: 30
       start_period: 30s
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: appbancaria-api
+    restart: unless-stopped
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: appbancaria
+      DB_USER: demo
+      DB_PASSWORD: demo
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:8080/actuator/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 40s
 
 volumes:
   mysql-dati:
